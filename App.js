@@ -12,14 +12,18 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <>
-       <NavigationContainer>
-       <Stack.Navigator screenOptions={{ headerShown: false }}>
+    
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+       <Stack.Screen
+          name="EmergenciaScreen"
+          component={EmergenciaScreen}
+          options={{title: 'EmergenciaScreen'}}
+        />
         <Stack.Screen name="ConfiguracionScreen" component={ConfiguracionScreen}/>
         <Stack.Screen name="CambioFondoScreen" component={CambioFondoScreen} />
       </Stack.Navigator>
-       </NavigationContainer>
-    </>
+    </NavigationContainer>
   );
 }
 

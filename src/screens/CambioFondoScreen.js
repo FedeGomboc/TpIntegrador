@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import { TextInput } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import BotonReutilizable from '../components/BotonReutilizable';
 import MenuReutilizable from '../components/MenuReutilizable';
 

@@ -1,53 +1,87 @@
-import { useState } from "react";
-import { TextInput } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TextInput, ImageBackground } from "react-native";
 import ConfiguracionService from "../services/ConfiguracionService";
 import BotonReutilizable from "../components/BotonReutilizable";
 import { Vibration } from "react-native";
 import MenuReutilizable from "../components/MenuReutilizable";
+import Mensajes from '../constants/Mensajes'
+import Helper from '../components/Helper'
 
-export default function ConfiguracionScreen() {
+
+let configurationService = new ConfiguracionService();
+
+export default function ConfiguracionScreen({ navigation }) {
   const [numero, setNumero] = useState("");
   const [urlVideo, setUrlVideo] = useState("");
-  const [urlMusica, serUrlMusica] = useState("");
+  const [urlMusica, setUrlMusica] = useState("");
+  const [urlFondo, setUrlFondo] = useState("");
+  const [mensajeModal, setMensajeModal] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [acceso, setAcceso] = useState(false);
+  
+  
 
   const guardarDatos = async () => {
     if (numero !== "" && urlVideo !== "" && urlMusica !== "") {
-      await ConfiguracionService.guardarDatos(numero, urlVideo, urlMusica);
-      alert("Los datos han sido guardados")
-      Vibration.vibrate()
+      if (await configurationService.guardarDatos(numero, urlVideo, urlMusica)) {
+        setMensajeModal(Mensajes.MSG_DATOS_GUARDADOS);//es para que la alerta pueda tener un estilo (lo pide la consigna)
+        setAcceso(true)
+      } else {
+        setMensajeModal(Mensajes.MSG_GUARDADO_FALLIDO);
+        setAcceso(false)
+      } 
     } else {
-      alert("Es necesario completar todos los datos");
-      Vibration.vibrate()
+      setMensajeModal(Mensajes.MSG_CAMPOS_INCOMPLETOS);
+      setAcceso(false)
     }
+    setModalVisible(true)
   };
+
+  let cargarFondo = async () => {
+    if (JSON.parse(await configurationService.obtenerFondo())) {
+      let imgFondo = JSON.parse(await dataService.obtenerBackground());
+      setUrlFondo(imgFondo.uri);
+    }
+  }
+
+  useEffect(() => {
+    cargarFondo();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Ingrese el numero de emergencia</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setNumero}
-        value={numero}
-        keyboardType="numeric"
-      />
+      <ImageBackground source={{ uri: urlFondo }} style={styles.image}>
+        <Text>Telefono</Text>
+        <TextInput
+          editable
+          style={styles.input}
+          placeholder="Ingrese un telefono de emergencia"
+          onChangeText={setNumero}
+          value={numero}
+          keyboardType="numeric"
+        />
 
-      <Text>Ingrese la url del video</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setUrlVideo}
-        value={urlVideo}
-      />
+        <Text>Video</Text>
+        <TextInput
+          editable
+          style={styles.input}
+          onChangeText={setUrlVideo}
+          placeholder="Ingrese una url de un video"
+          value={urlVideo}
+        />
 
-      <Text>Ingrese la url de la musica de fondo</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={serUrlMusica}
-        value={urlMusica}
-      />
-
-      <BotonReutilizable titulo="Guardar" onPress={guardarDatos}/>
-      <MenuReutilizable/>
+        <Text>Musica</Text>
+        <TextInput
+          editable
+          style={styles.input}
+          onChangeText={setUrlMusica}
+          placeholder="Ingrese una url de una cancion"
+          value={urlMusica}
+        />
+        <BotonReutilizable titulo="Guardar" onPress={guardarDatos}/>
+      </ImageBackground>
+      <Helper mensaje={mensajeModal} modalVisible={modalVisible} setModalVisible={setModalVisible} acceso={acceso} />
+      <MenuReutilizable navigation={navigation}/>
     </View>
   );
 }
@@ -70,4 +104,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderColor: "#00716F",
   },
+  image: {
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
