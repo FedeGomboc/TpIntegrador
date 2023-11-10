@@ -26,4 +26,9 @@ export default class ConfiguracionService {
       Vibration.vibrate();
     }
   };
+
+  static obtenerFondo = async () => {
+    const returnValue = await AsyncStorage.getItem(KEY_FONDO)
+    return returnValue
+  };
 }
