@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
+import { View, Text } from "react-native";
+import { Image } from "react-native";
 
 function AcercaDeScreen() {
   return (
-    <div>AcercaDeScreen</div>
-  )
+    <View>
+      <Text>Nombre de la aplicación</Text>
+    </View>
+  );
 }
 
-export default AcercaDeScreen
+export default AcercaDeScreen;

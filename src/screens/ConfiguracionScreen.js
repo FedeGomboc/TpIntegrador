@@ -7,12 +7,17 @@ import { Vibration } from "react-native";
 import MenuReutilizable from "../components/MenuReutilizable";
 import { ImageBackground } from "react-native";
 import { useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import useNavigation from "@react-navigation/native";
 
 export default function ConfiguracionScreen() {
   const [numero, setNumero] = useState("");
   const [urlVideo, setUrlVideo] = useState("");
   const [urlMusica, serUrlMusica] = useState("");
   const [imagenFondo, setImagenFondo] = useState("https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg");
+
+/*   const isFocused = useIsFocused()
+  const navigation = useNavigation(); */
 
   useEffect(() => {
     const recibirFondo = async () => {

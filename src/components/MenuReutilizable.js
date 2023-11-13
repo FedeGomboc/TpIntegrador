@@ -16,6 +16,10 @@ export default function MenuReutilizable() {
       <Pressable style={styles.boton} onPress={() => navigation.navigate("CambioFondoScreen")}>
         <Text>Cambio Fondo</Text>
       </Pressable>
+
+      <Pressable style={styles.boton} onPress={() => navigation.navigate("AcercaDeScreen")}>
+        <Text>Acerca De</Text>
+      </Pressable>
     </View>
   );
 }
@@ -33,7 +37,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   boton: {
-    width: "50%",
+    width: "33.3%",
     height: "100%",
     display: "flex",
     flexDirection: "row",
