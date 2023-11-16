@@ -20,6 +20,10 @@ export default function MenuReutilizable() {
       <Pressable style={styles.boton} onPress={() => navigation.navigate("AcercaDeScreen")}>
         <Text>Acerca De</Text>
       </Pressable>
+
+      <Pressable style={styles.boton} onPress={() => navigation.navigate("MultimediaScreen")}>
+        <Text>Multimedia</Text>
+      </Pressable>
     </View>
   );
 }
@@ -37,7 +41,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   boton: {
-    width: "33.3%",
+    width: "25%",
     height: "100%",
     display: "flex",
     flexDirection: "row",

@@ -5,6 +5,7 @@ import ConfiguracionScreen from "./src/screens/ConfiguracionScreen";
 import CambioFondoScreen from "./src/screens/CambioFondoScreen";
 import CamaraScreen from './src/screens/CamaraScreen';
 import AcercaDeScreen from './src/screens/AcercaDeScreen';
+import MultimediaScreen from './src/screens/MultimediaScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ export default function App() {
         <Stack.Screen name="CambioFondoScreen" component={CambioFondoScreen} />
         <Stack.Screen name="CamaraScreen" component={CamaraScreen} />
         <Stack.Screen name="AcercaDeScreen" component={AcercaDeScreen} />
+        <Stack.Screen name="MultimediaScreen" component={MultimediaScreen} />
       </Stack.Navigator>
        </NavigationContainer>
     </>
