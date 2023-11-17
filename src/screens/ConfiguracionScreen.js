@@ -1,41 +1,50 @@
-import { useState } from "react";
-import { TextInput } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TextInput, Vibration, ImageBackground  } from "react-native";
 import ConfiguracionService from "../services/ConfiguracionService";
 import BotonReutilizable from "../components/BotonReutilizable";
-import { Vibration } from "react-native";
 import MenuReutilizable from "../components/MenuReutilizable";
-import { ImageBackground } from "react-native";
-import { useEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
-import useNavigation from "@react-navigation/native";
+import MensajeModal from "../components/MensajeModal";
+import Mensaje from "../constants/Mensajes"
+import {useNavigation} from "@react-navigation/native";
+
 
 export default function ConfiguracionScreen() {
   const [numero, setNumero] = useState("");
   const [urlVideo, setUrlVideo] = useState("");
   const [urlMusica, serUrlMusica] = useState("");
   const [imagenFondo, setImagenFondo] = useState("https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg");
+  const [mensaje, setMensaje] = useState("");
+  const [verModal, setVerModal] = useState(false);
+  const [acceso, setAcceso] = useState(false);
 
-/*   const isFocused = useIsFocused()
-  const navigation = useNavigation(); */
+  const navigation = useNavigation(); 
+  let configService = new ConfiguracionService();
 
   useEffect(() => {
     const recibirFondo = async () => {
-      let recibir = await ConfiguracionService.obtenerFondo();
+      let recibir = await configService.obtenerFondo();
       setImagenFondo(recibir);
     };
     recibirFondo();
-  }, []);
+  }, []);//probar con Navigation
 
   const guardarDatos = async () => {
     if (numero !== "" && urlVideo !== "" && urlMusica !== "") {
-      await ConfiguracionService.guardarDatos(numero, urlVideo, urlMusica);
-      alert("Los datos han sido guardados");
-      Vibration.vibrate();
+      if(await configService.guardarDatos(numero, urlVideo, urlMusica)){
+        setMensaje(Mensaje.MSG_DATOS_GUARDADOS);       
+        setAcceso(true)
+        Vibration.vibrate();
+      } else{
+        setMensaje(Mensaje.MSG_GUARDADO_FALLIDO);
+        setAcceso(false)
+        Vibration.vibrate();
+      }
     } else {
-      alert("Es necesario completar todos los datos");
+      setMensaje(Mensaje.MSG_CAMPOS_INCOMPLETOS);
+      setAcceso(false)
       Vibration.vibrate();
     }
+    setVerModal(true)
   };
 
   return (
@@ -47,7 +56,9 @@ export default function ConfiguracionScreen() {
       >
         <Text>Ingrese el numero de emergencia</Text>
         <TextInput
+          editable
           style={styles.input}
+          placeholder="Ingrese un número telefonico"
           onChangeText={setNumero}
           value={numero}
           keyboardType="numeric"
@@ -55,21 +66,26 @@ export default function ConfiguracionScreen() {
 
         <Text>Ingrese la url del video</Text>
         <TextInput
+          editable
           style={styles.input}
+          placeholder="Ingrese una URL"
           onChangeText={setUrlVideo}
           value={urlVideo}
         />
 
         <Text>Ingrese la url de la musica de fondo</Text>
         <TextInput
+          editable
           style={styles.input}
+          placeholder="Ingrese una URL"
           onChangeText={serUrlMusica}
           value={urlMusica}
         />
 
         <BotonReutilizable titulo="Guardar" onPress={guardarDatos} />
       </ImageBackground>
-      <MenuReutilizable />
+      <MensajeModal mensaje={mensaje} verModal={verModal} setVerModal={setVerModal} acceso={acceso} />
+      <MenuReutilizable navigation={navigation}/>
     </View>
   );
 }

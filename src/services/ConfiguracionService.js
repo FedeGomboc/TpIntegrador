@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Vibration } from "react-native";
+import {
+  Vibration
+} from "react-native";
 
 const KEY_NUMERO = "numero";
 const KEY_VIDEO = "video";
@@ -31,4 +33,28 @@ export default class ConfiguracionService {
     const returnValue = await AsyncStorage.getItem(KEY_FONDO)
     return returnValue
   };
+
+  static obtenerDatos = async () => {
+    let numero = await AsyncStorage.getItem(KEY_NUMERO);
+    let video = await AsyncStorage.getItem(KEY_VIDEO);
+    let musica = await AsyncStorage.getItem(KEY_MUSICA);
+    const returnValue = {
+      'telefono': numero,
+      'video': video,
+      'musica': musica
+    };
+    return returnValue;
+  };
+  
+  static eliminarDatos = async () => {
+    try {
+      await AsyncStorage.removeItem(KEY_NUMERO);
+      await AsyncStorage.removeItem(KEY_VIDEO);
+      await AsyncStorage.removeItem(KEY_MUSICA);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
 }

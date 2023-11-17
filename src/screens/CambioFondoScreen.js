@@ -1,17 +1,16 @@
-import { useState } from "react";
-import { TextInput } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, View, ImageBackground, Vibration } from "react-native";
 import BotonReutilizable from "../components/BotonReutilizable";
 import MenuReutilizable from "../components/MenuReutilizable";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import ConfiguracionService from "../services/ConfiguracionService";
-import { Vibration } from "react-native";
-import { ImageBackground } from "react-native";
-import { useEffect } from "react";
 
 export default function CambioFondoScreen() {
+  
   const navigation = useNavigation();
+  let configService = new ConfiguracionService();
+
   const [imagenFondo, setImagenFondo] = useState("https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg");
 
   useEffect(() => {
@@ -22,7 +21,7 @@ export default function CambioFondoScreen() {
 
   useEffect(() => {
     const recibirFondo = async () => {
-    let recibir = await ConfiguracionService.obtenerFondo()
+    let recibir = await configService.obtenerFondo()
     setImagenFondo(recibir)
     }
     recibirFondo()
@@ -30,7 +29,7 @@ export default function CambioFondoScreen() {
 
   const guardarFondo = async () => {
     if (imagenFondo !== "") {
-      await ConfiguracionService.guardarFondo(imagenFondo);
+      await configService.guardarFondo(imagenFondo);
     } else {
       alert("Ha ocurrido un error");    
       console.log(error)
@@ -73,7 +72,7 @@ export default function CambioFondoScreen() {
       <BotonReutilizable titulo="Sacar foto" onPress={() => navigation.navigate("CamaraScreen")}/>
       <BotonReutilizable titulo="Galeria de fotos" onPress={() => seleccionarImagen()}/>
       </ImageBackground>
-      <MenuReutilizable/>
+      <MenuReutilizable navigation={navigation} />
     </View>
   );
 }
