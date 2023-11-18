@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import MenuReutilizable from "../components/MenuReutilizable";
 import { useFonts } from "expo-font";
-import * as Font from 'expo-font';
-import * as Clipboard from 'expo-clipboard';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+//import * as Font from 'expo-font';
+//import * as Clipboard from 'expo-clipboard';
+//import { BarCodeScanner } from 'expo-barcode-scanner';
 import BotonReutilizable from "../components/BotonReutilizable";
 import ConfiguracionService from "../services/ConfiguracionService";
 import {useNavigation} from "@react-navigation/native";
 
-export default function AcercaDeScreen(navigation) {
+export default function AcercaDeScreen() {
   const [textoCopiado, setTextoCopiado] = useState("")
   const [imagenFondo, setImagenFondo] = useState("https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg");
 
@@ -30,8 +30,8 @@ export default function AcercaDeScreen(navigation) {
     'BarcodeFont': require("../../assets/BarcodeFont.ttf"),
   });
 
-  const Copiar = (texto) => {
-    Clipboard.setString(texto)
+  const Copiar = async (texto) => {
+    await Clipboard.setStringAsync(texto)
     alert("Texto copiado al Clipboard")
   }
 

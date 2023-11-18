@@ -9,7 +9,6 @@ import ConfiguracionService from "../services/ConfiguracionService";
 export default function CambioFondoScreen() {
   
   const navigation = useNavigation();
-  let configService = new ConfiguracionService();
 
   const [imagenFondo, setImagenFondo] = useState("https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg");
 
@@ -21,7 +20,7 @@ export default function CambioFondoScreen() {
 
   useEffect(() => {
     const recibirFondo = async () => {
-    let recibir = await configService.obtenerFondo()
+    let recibir = await ConfiguracionService.obtenerFondo()
     setImagenFondo(recibir)
     }
     recibirFondo()
@@ -29,7 +28,7 @@ export default function CambioFondoScreen() {
 
   const guardarFondo = async () => {
     if (imagenFondo !== "") {
-      await configService.guardarFondo(imagenFondo);
+      await ConfiguracionService.guardarFondo(imagenFondo);
     } else {
       alert("Ha ocurrido un error");    
       console.log(error)

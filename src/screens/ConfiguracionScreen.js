@@ -6,6 +6,7 @@ import MenuReutilizable from "../components/MenuReutilizable";
 import MensajeModal from "../components/MensajeModal";
 import Mensaje from "../constants/Mensajes"
 import {useNavigation} from "@react-navigation/native";
+import { Navigation } from "react-native-navigation";
 
 
 export default function ConfiguracionScreen() {
@@ -18,11 +19,10 @@ export default function ConfiguracionScreen() {
   const [acceso, setAcceso] = useState(false);
 
   const navigation = useNavigation(); 
-  let configService = new ConfiguracionService();
 
   useEffect(() => {
     const recibirFondo = async () => {
-      let recibir = await configService.obtenerFondo();
+      let recibir = await ConfiguracionService.obtenerFondo();
       setImagenFondo(recibir);
     };
     recibirFondo();
@@ -30,7 +30,7 @@ export default function ConfiguracionScreen() {
 
   const guardarDatos = async () => {
     if (numero !== "" && urlVideo !== "" && urlMusica !== "") {
-      if(await configService.guardarDatos(numero, urlVideo, urlMusica)){
+      if(await ConfiguracionService.guardarDatos(numero, urlVideo, urlMusica)){
         setMensaje(Mensaje.MSG_DATOS_GUARDADOS);       
         setAcceso(true)
         Vibration.vibrate();
