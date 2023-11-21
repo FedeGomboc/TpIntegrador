@@ -10,19 +10,23 @@ export default function MenuReutilizable() {
   return (
     <View style={styles.container}>
       <Pressable style={styles.boton} onPress={() => navigation.navigate("ConfiguracionScreen")}>
-        <Text>Configuracion</Text>
+        <Text style={styles.text}>Configuración</Text>
       </Pressable>
 
       <Pressable style={styles.boton} onPress={() => navigation.navigate("CambioFondoScreen")}>
-        <Text>Cambio Fondo</Text>
+        <Text style={styles.text}>Fondo</Text>
       </Pressable>
 
       <Pressable style={styles.boton} onPress={() => navigation.navigate("AcercaDeScreen")}>
-        <Text>Acerca De</Text>
+        <Text style={styles.text}>Acerca de</Text>
       </Pressable>
 
       <Pressable style={styles.boton} onPress={() => navigation.navigate("MultimediaScreen")}>
-        <Text>Multimedia</Text>
+        <Text style={styles.text}>Multimedia</Text>
+      </Pressable>
+
+      <Pressable style={styles.boton} onPress={() => navigation.navigate("EmergenciaScreen")}>
+        <Text style={styles.text}>Emergencia</Text>
       </Pressable>
     </View>
   );
@@ -41,11 +45,19 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   boton: {
-    width: "25%",
+    width: "20%",
     height: "100%",
     display: "flex",
+    backgroundColor: "white",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "black",
+    paddingHorizontal: 10
+  },
+  text: {
+    textAlign: "center",
+    color: 'black',
   },
 });

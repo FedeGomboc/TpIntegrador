@@ -1,63 +1,86 @@
-import React, {useState, useEffect} from 'react'
-import {Text, View, Button } from "react-native";
-import MenuReutilizable from '../components/MenuReutilizable';
-
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Text,
+  View,
+  Button,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+} from "react-native";
+import MenuReutilizable from "../components/MenuReutilizable";
+import { Audio, Video } from "expo-av";
+import ConfiguracionService from "../services/ConfiguracionService";
+import BotonReutilizable from "../components/BotonReutilizable";
 
 function MultimediaScreen() {
-  
-  const [sound, setSound] = useState();
-  const [isReproducing, setIsReproducing] = useState(false);
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
+  const [videoUrl, setVideoUrl] = useState(undefined)
+  const [musicaUrl, setMusicaUrl] = useState(undefined)
+  const [sound, setSound] = useState()
 
-  let selectSound = async () => {
-    if(isReproducing && sound != undefined){
-        setIsReproducing(false)
-        console.log('Unloading Sound');
-        await sound.pauseAsync();
-        sound.unloadAsync();
-    }else{
-        console.log('Loading Sound');
-        if (audioObject.type === 'url') {
-            const { sound } = await Audio.Sound.createAsync({ uri: audioObject.sound }, { volume: 0.8 },);
-            setSound(sound);
-        } else {
-            const { sound } = await Audio.Sound.createAsync(audioObject.sound)
-            setSound(sound);            
+  useEffect(() => {
+    cargarDatos()
+  }, []);
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log('Unloading Sound');
+          sound.unloadAsync();
         }
-    }        
-}
+      : undefined;
+  }, [sound]);
 
-let playSound = async () => {
-    setIsReproducing(true)
+  const cargarDatos = async () => {
+    if (await ConfiguracionService.obtenerDatos()) {
+        let datos = await ConfiguracionService.obtenerDatos();
+        if (datos.video && datos.musica) {
+            setVideoUrl(datos.video)
+            setMusicaUrl(datos.musica)
+        }
+      }
+  }
+
+  const reproducirSonido = async () => {
+    console.log('Loading Sound');
+    const { sound } = await Audio.Sound.createAsync({uri: musicaUrl})
+    setSound(sound);
+
     console.log('Playing Sound');
-    await sound.playAsync();        
-}
-
-useEffect(() => {
-    if(sound != undefined){
-        playSound();            
-    }           
-}, [sound]);
-
-let audioContainer = {
-    width: '50%',
-    height: 300,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 20,
-    overflow: 'hidden',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    backgroundColor: isReproducing ? 'green' : 'white'
-}
+    await sound.playAsync();
+  }
 
   return (
-    <View>
-      <Text>MultimediaScreen</Text>
-      <MenuReutilizable/>
+    <View style={styles.container}>
+      <Video
+        ref={video}
+        style={styles.video}
+        source={{
+          uri: videoUrl,
+        }}
+        useNativeControls
+        resizeMode="contain"
+        isLooping
+        onPlaybackStatusUpdate={setStatus}
+      />
+      <BotonReutilizable onPress={reproducirSonido} titulo="Reproducir musica"/>
+      <BotonReutilizable onPress={() => sound.unloadAsync()} titulo="Frenar musica"/>
+      <MenuReutilizable />
     </View>
-  )
+  );
 }
 
-export default MultimediaScreen
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  video: {
+    width: "80%",
+    height: 200,
+  },
+});
+
+export default MultimediaScreen;

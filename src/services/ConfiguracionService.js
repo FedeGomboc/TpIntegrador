@@ -55,6 +55,4 @@ export default class ConfiguracionService {
       console.log(error);
     }
   };
-
-
 }

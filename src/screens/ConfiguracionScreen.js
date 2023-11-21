@@ -8,7 +8,6 @@ import Mensaje from "../constants/Mensajes"
 import {useNavigation} from "@react-navigation/native";
 import { Navigation } from "react-native-navigation";
 
-
 export default function ConfiguracionScreen() {
   const [numero, setNumero] = useState("");
   const [urlVideo, setUrlVideo] = useState("");
@@ -26,7 +25,7 @@ export default function ConfiguracionScreen() {
       setImagenFondo(recibir);
     };
     recibirFondo();
-  }, []);//probar con Navigation
+  }, [navigation]);//probar con Navigation
 
   const guardarDatos = async () => {
     if (numero !== "" && urlVideo !== "" && urlMusica !== "") {
