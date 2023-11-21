@@ -11,23 +11,24 @@ import { TouchableOpacity } from "react-native";
 
 export default function AcercaDeScreen() {
   const [textoCopiado, setTextoCopiado] = useState("");
-  const [imagenFondo, setImagenFondo] = useState(
-    "https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg"
-  );
+  const [image, setImage] = useState(null)
   const [fontsLoaded, setFontsLoaded] = useState(false);
-
+  
   const navigation = useNavigation();
 
   useEffect(() => {
     loadFonts();
   }, []);
 
+  let loadBackground = async () => {
+    if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
+      let backgroundImage = JSON.parse(await ConfiguracionService.obtenerFondo());
+      setImage(backgroundImage.uri);
+    }
+  }
+
   useEffect(() => {
-    const recibirFondo = async () => {
-      let recibir = await ConfiguracionService.obtenerFondo();
-      setImagenFondo(recibir);
-    };
-    recibirFondo();
+    loadBackground();
   }, []);
 
   async function loadFonts() {
@@ -45,7 +46,7 @@ export default function AcercaDeScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={{ uri: imagenFondo }}
+        source={{ uri: image }}
         resizeMode="cover"
         style={styles.image}
       >

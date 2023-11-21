@@ -11,6 +11,7 @@ import MenuReutilizable from "../components/MenuReutilizable";
 import { Audio, Video } from "expo-av";
 import ConfiguracionService from "../services/ConfiguracionService";
 import BotonReutilizable from "../components/BotonReutilizable";
+import { ImageBackground } from "react-native";
 
 function MultimediaScreen() {
   const video = useRef(null);
@@ -18,8 +19,18 @@ function MultimediaScreen() {
   const [videoUrl, setVideoUrl] = useState(undefined)
   const [musicaUrl, setMusicaUrl] = useState(undefined)
   const [sound, setSound] = useState()
+  const [image, setImage] = useState(null)
+  
+
+  let loadBackground = async () => {
+    if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
+      let backgroundImage = JSON.parse(await ConfiguracionService.obtenerFondo());
+      setImage(backgroundImage.uri);
+    }
+  }
 
   useEffect(() => {
+    loadBackground();
     cargarDatos()
   }, []);
 
@@ -53,6 +64,11 @@ function MultimediaScreen() {
 
   return (
     <View style={styles.container}>
+       <ImageBackground
+        source={{ uri: image }}
+        resizeMode="cover"
+        style={styles.image}
+      >
       <Video
         ref={video}
         style={styles.video}
@@ -66,20 +82,26 @@ function MultimediaScreen() {
       />
       <BotonReutilizable onPress={reproducirSonido} titulo="Reproducir musica"/>
       <BotonReutilizable onPress={() => sound.unloadAsync()} titulo="Frenar musica"/>
+      </ImageBackground>
       <MenuReutilizable />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   video: {
     width: "80%",
     height: 200,
+  },
+  image: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    height: "100%",
   },
 });
 

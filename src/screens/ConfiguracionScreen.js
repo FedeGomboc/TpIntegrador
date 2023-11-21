@@ -12,20 +12,21 @@ export default function ConfiguracionScreen() {
   const [numero, setNumero] = useState("");
   const [urlVideo, setUrlVideo] = useState("");
   const [urlMusica, serUrlMusica] = useState("");
-  const [imagenFondo, setImagenFondo] = useState("https://img.freepik.com/foto-gratis/resumen-superficie-texturas-muro-piedra-hormigon-blanco_74190-8189.jpg");
+  const [image, setImage] = useState(null);
   const [mensaje, setMensaje] = useState("");
   const [verModal, setVerModal] = useState(false);
   const [acceso, setAcceso] = useState(false);
 
-  const navigation = useNavigation(); 
+  let loadBackground = async () => {
+    if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
+      let backgroundImage = JSON.parse(await ConfiguracionService.obtenerFondo());
+      setImage(backgroundImage.uri);
+    }
+  }
 
   useEffect(() => {
-    const recibirFondo = async () => {
-      let recibir = await ConfiguracionService.obtenerFondo();
-      setImagenFondo(recibir);
-    };
-    recibirFondo();
-  }, [navigation]);//probar con Navigation
+    loadBackground();
+  }, []);
 
   const guardarDatos = async () => {
     if (numero !== "" && urlVideo !== "" && urlMusica !== "") {
@@ -49,7 +50,7 @@ export default function ConfiguracionScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={{ uri: imagenFondo }}
+        source={{ uri: image }}
         resizeMode="cover"
         style={styles.image}
       >
@@ -84,7 +85,7 @@ export default function ConfiguracionScreen() {
         <BotonReutilizable titulo="Guardar" onPress={guardarDatos} />
       </ImageBackground>
       <MensajeModal mensaje={mensaje} verModal={verModal} setVerModal={setVerModal} acceso={acceso} />
-      <MenuReutilizable navigation={navigation}/>
+      <MenuReutilizable/>
     </View>
   );
 }
