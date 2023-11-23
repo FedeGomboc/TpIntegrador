@@ -1,79 +1,112 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import MenuReutilizable from "../components/MenuReutilizable";
-import * as Font from "expo-font";
-import BotonReutilizable from "../components/BotonReutilizable";
-import ConfiguracionService from "../services/ConfiguracionService";
-import { useNavigation } from "@react-navigation/native";
-import * as Clipboard from "expo-clipboard";
-import { BarCodeScanner } from "expo-barcode-scanner";
-import { TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, ImageBackground, Image, TouchableOpacity, Button } from 'react-native'
+import React, { useState, useEffect } from 'react';
+import * as Font from 'expo-font';
+import * as Clipboard from 'expo-clipboard';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import MenuReutilizable from '../components/MenuReutilizable';
+import ConfiguracionService from '../services/ConfiguracionService';
 
-export default function AcercaDeScreen() {
-  const [textoCopiado, setTextoCopiado] = useState("");
-  const [image, setImage] = useState(null)
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  
-  const navigation = useNavigation();
+export default function AcercaDe({ navigation }) {
 
-  useEffect(() => {
-    loadFonts();
-  }, []);
+    const [image, setImage] = useState(null);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+    const [hasPermission, setHasPermission] = useState(null);
+    const [scanned, setScanned] = useState(false);
+    const [scanQR, setScanQR] = useState(false);
 
-  let loadBackground = async () => {
-    if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
-      let backgroundImage = JSON.parse(await ConfiguracionService.obtenerFondo());
-      setImage(backgroundImage.uri);
+    async function loadFonts() {
+        await Font.loadAsync({
+            'barcodeFont': require('../fonts/barcodeFont.ttf'),
+        });
+        setFontsLoaded(true)
     }
-  }
 
-  useEffect(() => {
-    loadBackground();
-  }, []);
+    let loadBackground = async () => {
+      if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
+        let backgroundImage = JSON.parse(
+          await ConfiguracionService.obtenerFondo()
+        );
+        setImage(backgroundImage.uri);
+      }
+    };
 
-  async function loadFonts() {
-    await Font.loadAsync({
-      font: require("../../assets/fonts/BarcodeFont.ttf"),
-    });
-    setFontsLoaded(true);
-  }
+    const copyToClipboard = async () => {
+        await Clipboard.setStringAsync(NOMBRE_APP);
+    };
 
-  const Copiar = async (texto) => {
-    await Clipboard.setStringAsync(texto);
-    alert("Texto copiado al Clipboard");
-  };
+    const handleBarCodeScanned = ({ type, data }) => {
+        setScanned(true);
+        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    };
 
-  return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: image }}
-        resizeMode="cover"
-        style={styles.image}
-      >
-         {fontsLoaded ? (
-              <TouchableOpacity onPress={() => Copiar()}>
-                <Text style={{ fontSize: 20 }}>FEDERICO GOMBOC Y LUCIANO NEIMAN</Text>
-                <Text style={{ fontFamily: 'font', fontSize: 60 }}>FEDERICO GOMBOC Y LUCIANO NEIMAN</Text>
-              </TouchableOpacity>
-          ) : (
-            <Text>Error</Text>
-          )}
-        <BotonReutilizable titulo="Copiar al Clipboard" onPress={Copiar} />
-      </ImageBackground>
-      <MenuReutilizable />
-    </View>
-  );
+    useEffect(() => {
+        const getBarCodeScannerPermissions = async () => {
+            const { status } = await BarCodeScanner.requestPermissionsAsync();
+            setHasPermission(status === 'granted');
+        };
+        getBarCodeScannerPermissions();
+        loadBackground();
+        loadFonts();
+    }, []);
+
+    return (
+        <>
+            <SafeAreaView style={[styles.container]} >
+                <ImageBackground source={{ uri: image }} style={styles.image}>
+                    {fontsLoaded ? (
+                        <>
+                            <TouchableOpacity style={{ backgroundColor: 'white' }} onPress={() => copyToClipboard()}>
+                                <Text style={{ fontSize: 20 }}>Federico Gomboc y Luciano Neiman</Text>
+                                <Text style={{ fontFamily: 'barcodeFont', fontSize: 40 }}>Federico Gomboc y Luciano Neiman</Text>
+                            </TouchableOpacity>
+                            {/* <Text style={{ fontSize: 20 }}>Presione el QR para copiar el texto</Text> */}
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                    {/* <Button onPress={() => setScanQR(true)} title='Escanear APP' style={styles.button} /> */}
+                    {scanQR ? (
+                        <>
+                            <BarCodeScanner
+                                onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                                style={StyleSheet.absoluteFillObject}
+                            />
+                            {scanned && <>
+                                <Button onPress={() => setScanned(false)} title='Escanear de nuevo' style={styles.button} />
+                                <Button onPress={() => setScanQR(false)} title='Cerrar escanner' style={styles.button} />
+                            </>
+                            }
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </ImageBackground>
+                <MenuReutilizable/>
+            </SafeAreaView>
+        </>
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    height: "100%",
-  },
-  image: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        width: '100%',
+        backgroundColor: '#fff'
+    },
+    button: {
+        marginTop: 20,
+        width: 300,
+        height: 60,
+        backgroundColor: 'black',
+        borderRadius: 10
+    },
+    image: {
+        width: '100%',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });

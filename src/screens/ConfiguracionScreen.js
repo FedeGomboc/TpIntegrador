@@ -3,10 +3,8 @@ import { StyleSheet, Text, View, TextInput, Vibration, ImageBackground  } from "
 import ConfiguracionService from "../services/ConfiguracionService";
 import BotonReutilizable from "../components/BotonReutilizable";
 import MenuReutilizable from "../components/MenuReutilizable";
-import MensajeModal from "../components/MensajeModal";
-import Mensaje from "../constants/Mensajes"
-import {useNavigation} from "@react-navigation/native";
-import { Navigation } from "react-native-navigation";
+import ModalMensaje from "../components/ModalMensaje";
+import MessageConstants from "../constants/MessageConstants";
 
 export default function ConfiguracionScreen() {
   const [numero, setNumero] = useState("");
@@ -14,8 +12,10 @@ export default function ConfiguracionScreen() {
   const [urlMusica, serUrlMusica] = useState("");
   const [image, setImage] = useState(null);
   const [mensaje, setMensaje] = useState("");
-  const [verModal, setVerModal] = useState(false);
   const [acceso, setAcceso] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [mensajeModal, setMensajeModal] = useState('');
 
   let loadBackground = async () => {
     if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
@@ -31,20 +31,17 @@ export default function ConfiguracionScreen() {
   const guardarDatos = async () => {
     if (numero !== "" && urlVideo !== "" && urlMusica !== "") {
       if(await ConfiguracionService.guardarDatos(numero, urlVideo, urlMusica)){
-        setMensaje(Mensaje.MSG_DATOS_GUARDADOS);       
-        setAcceso(true)
-        Vibration.vibrate();
+        setMensajeModal(MessageConstants.MSG_DATOS_GUARDADOS);
+        setSuccess(true)
       } else{
-        setMensaje(Mensaje.MSG_GUARDADO_FALLIDO);
-        setAcceso(false)
-        Vibration.vibrate();
+        setMensajeModal(MessageConstants.MSG_DATOS_GUARDADOS);
+        setSuccess(false)
       }
     } else {
-      setMensaje(Mensaje.MSG_CAMPOS_INCOMPLETOS);
-      setAcceso(false)
-      Vibration.vibrate();
+      setMensajeModal(MessageConstants.MSG_CAMPOS_INCOMPLETOS);
+      setSuccess(false)
     }
-    setVerModal(true)
+    setModalVisible(true)
   };
 
   return (
@@ -84,7 +81,7 @@ export default function ConfiguracionScreen() {
 
         <BotonReutilizable titulo="Guardar" onPress={guardarDatos} />
       </ImageBackground>
-      <MensajeModal mensaje={mensaje} verModal={verModal} setVerModal={setVerModal} acceso={acceso} />
+      <ModalMensaje mensaje={mensajeModal} modalVisible={modalVisible} setModalVisible={setModalVisible} success={success} />
       <MenuReutilizable/>
     </View>
   );

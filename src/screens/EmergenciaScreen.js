@@ -4,12 +4,17 @@ import MenuReutilizable from "../components/MenuReutilizable";
 import ConfiguracionService from "../services/ConfiguracionService";
 import { Accelerometer } from "expo-sensors";
 import call from "react-native-phone-call";
+import ModalMensaje from '../components/ModalMensaje'
+import MessageConstants from '../constants/MessageConstants'
 
 export default function EmergenciaScreen() {
   const [{ x, y, z }, setData] = useState({ x: 0, y: 0, z: 0 });
   const [subscription, setSubscription] = useState(null);
   const [telefono, setTelefono] = useState();
   const [image, setImage] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [mensajeModal, setMensajeModal] = useState('');
 
   const _slow = () => Accelerometer.setUpdateInterval(1000);
 
