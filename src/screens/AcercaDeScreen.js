@@ -6,6 +6,8 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import MenuReutilizable from '../components/MenuReutilizable';
 import ConfiguracionService from '../services/ConfiguracionService';
 
+const NOMBRE_APP = 'Federico Gomboc y Luciano Neiman'
+
 export default function AcercaDe({ navigation }) {
 
     const [image, setImage] = useState(null);
@@ -14,12 +16,27 @@ export default function AcercaDe({ navigation }) {
     const [scanned, setScanned] = useState(false);
     const [scanQR, setScanQR] = useState(false);
 
-    async function loadFonts() {
+    /*async function loadFonts() {
         await Font.loadAsync({
             'barcodeFont': require('../fonts/barcodeFont.ttf'),
         });
         setFontsLoaded(true)
+    }*/
+
+    async function loadFonts() {
+        try {
+            console.log('Cargando la fuente...');
+            await Font.loadAsync({
+                'barcodeFont': require('../fonts/barcodeFont.ttf'),
+            });
+            console.log('Fuente cargada exitosamente');
+            setFontsLoaded(true);
+        } catch (error) {
+            console.error("Error al cargar la fuente:", error);
+        }
     }
+    
+    
 
     let loadBackground = async () => {
       if (JSON.parse(await ConfiguracionService.obtenerFondo())) {
@@ -38,6 +55,7 @@ export default function AcercaDe({ navigation }) {
         setScanned(true);
         alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
+    
 
     useEffect(() => {
         const getBarCodeScannerPermissions = async () => {
@@ -48,41 +66,49 @@ export default function AcercaDe({ navigation }) {
         loadBackground();
         loadFonts();
     }, []);
-
+    
     return (
         <>
+        {fontsLoaded ? (
             <SafeAreaView style={[styles.container]} >
                 <ImageBackground source={{ uri: image }} style={styles.image}>
-                    {fontsLoaded ? (
+                    
                         <>
                             <TouchableOpacity style={{ backgroundColor: 'white' }} onPress={() => copyToClipboard()}>
                                 <Text style={{ fontSize: 20 }}>Federico Gomboc y Luciano Neiman</Text>
                                 <Text style={{ fontFamily: 'barcodeFont', fontSize: 40 }}>Federico Gomboc y Luciano Neiman</Text>
                             </TouchableOpacity>
-                            {/* <Text style={{ fontSize: 20 }}>Presione el QR para copiar el texto</Text> */}
+                             <Text style={{ fontSize: 20 }}>Presione el QR para copiar el texto</Text>
                         </>
-                    ) : (
-                        <></>
-                    )}
-                    {/* <Button onPress={() => setScanQR(true)} title='Escanear APP' style={styles.button} /> */}
+                    
+                    
+                     {<Button onPress={() => setScanQR(true)} title='Escanear APP' style={styles.button} />}
+
+                     
+
                     {scanQR ? (
                         <>
+                            {console.log('Mostrando escáner')}
                             <BarCodeScanner
                                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                                 style={StyleSheet.absoluteFillObject}
                             />
-                            {scanned && <>
+                            {scanned && (
+                            <>
                                 <Button onPress={() => setScanned(false)} title='Escanear de nuevo' style={styles.button} />
                                 <Button onPress={() => setScanQR(false)} title='Cerrar escanner' style={styles.button} />
                             </>
-                            }
+                            )}
                         </>
                     ) : (
-                        <></>
+                        <Text>El escáner no está activado.</Text>
                     )}
                 </ImageBackground>
-                <MenuReutilizable/>
+                <MenuReutilizable navigation={navigation}/>
             </SafeAreaView>
+             ) : (
+                <Text>Cargando fuentes...</Text>
+            )}  
         </>
     )
 }
