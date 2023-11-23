@@ -57,7 +57,7 @@ export default function CambioFondoScreen() {
         quality: 1,
       });
 
-      if (result.cancelled) {
+      if (result.canceled) {
         console.log("El usuario canceló la selección");
       } else {
         /* const path = result.assets[0].uri;
